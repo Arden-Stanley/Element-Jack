@@ -14,7 +14,9 @@ Implementation of the game BlackJack with a custom language known as ElementLang
 
 ```bash
 chmod +x build.sh
-./build.sh # you only need to run this if you have already used the line above
+chmod +x rmcmt.sh
+./rmctm.sh src/Blackjack.elem <output file>
+./build.sh # you only need to run this if you have already used the lines above
 ```
 
 ### Windows

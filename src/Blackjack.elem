@@ -1,1 +1,271 @@
-grass "Hello, World!" 
+// player variables
+playerScore = 0
+playerAces = 0
+playerBust = 0
+playerTurn = 1
+
+// dealer variable
+dealerScore = 0
+dealerAces = 0
+dealerBust = 0
+dealerTurn = 0
+
+//temp
+winner = 0
+playerCard1 = 0
+playerCard2 = 0
+dealerCard1 = 0
+dealerCard2 = 0
+playerChoice = 0
+
+
+// ---------------------------------
+// introduction
+// ---------------------------------
+
+grass "==============================="
+grass "     WELCOME TO BLACKJACK      "
+grass "==============================="
+grass " "
+
+// player card 1
+rawCard = surprise ( 1 , 13 )
+drawnVal = rawCard
+leftpsychic ( rawCard == 1 ) {
+    drawnVal = 11
+    playerAces = (+ playerAces 1 )
+}
+leftpsychic ( rawCard > 10 ) {
+    drawnVal = 10
+}
+playerCard1 = drawnVal
+playerScore = (+ playerScore drawnVal )
+
+// dealer card 1
+rawCard = surprise ( 1 , 13 )
+drawnVal = rawCard
+leftpsychic ( rawCard == 1 ) {
+    drawnVal = 11
+    dealerAces = (+ dealerAces 1 )
+}
+leftpsychic ( rawCard > 10 ) {
+    drawnVal = 10
+}
+dealerCard1 = drawnVal
+dealerScore = (+ dealerScore drawnVal )
+
+// player card 2
+rawCard = surprise ( 1 , 13 )
+drawnVal = rawCard
+leftpsychic ( rawCard == 1 ) {
+    drawnVal = 11
+    playerAces = (+ playerAces 1 )
+}
+leftpsychic ( rawCard > 10 ) {
+    drawnVal = 10
+}
+playerCard2 = drawnVal
+playerScore = (+ playerScore drawnVal )
+
+adjustLoop = playerScore
+checkpsychic ( adjustLoop > 21 ) {
+    leftpsychic ( playerAces > 0 ) {
+        playerScore = (- playerScore 10 )
+        playerAces = (- playerAces 1 )
+        adjustLoop = playerScore
+    }
+    leftpsychic ( playerAces == 0 ) {
+        playerBust = 1
+        adjustLoop = 0
+    }
+}
+
+// dealer card 2
+rawCard = surprise ( 1 , 13 )
+drawnVal = rawCard
+leftpsychic ( rawCard == 1 ) {
+    drawnVal = 11
+    dealerAces = (+ dealerAces 1 )
+}
+leftpsychic ( rawCard > 10 ) {
+    drawnVal = 10
+}
+dealerCard2 = drawnVal
+dealerScore = (+ dealerScore drawnVal )
+
+adjustLoop = dealerScore
+checkpsychic ( adjustLoop > 21 ) {
+    leftpsychic ( dealerAces > 0 ) {
+        dealerScore = (- dealerScore 10 )
+        dealerAces = (- dealerAces 1 )
+        adjustLoop = dealerScore
+    }
+    leftpsychic ( dealerAces == 0 ) {
+        dealerBust = 1
+        adjustLoop = 0
+    }
+}
+
+// ----------------------------------------
+// ROUND START
+// ----------------------------------------
+
+grass "--- YOUR HAND ---"
+grass (# "Card 1: " playerCard1 )
+grass (# "Card 2: " playerCard2 )
+grass (# "Your Total: " playerScore )
+grass " "
+grass "--- DEALER ---"
+grass (# "Card 1: " dealerCard1 )
+grass "Card 2: HIDDEN"
+grass " "
+
+// check for automatic blackjack
+leftpsychic ( playerScore == 21 ) {
+    leftpsychic ( dealerScore == 21 ) {
+        grass (# "Dealer Card 2: " dealerCard2 )
+        grass "*** PUSH - It is a tie! ***"
+        winner = 3
+        playerTurn = 0
+    }
+    leftpsychic ( dealerScore != 21 ) {
+        grass "*** BLACKJACK! You win! ***"
+        winner = 1
+        playerTurn = 0
+    }
+}
+leftpsychic ( playerScore != 21 ) {
+    leftpsychic ( dealerScore == 21 ) {
+        grass (# "Dealer Card 2: " dealerCard2 )
+        grass "*** Dealer BLACKJACK! You lose. ***"
+        winner = 2
+        playerTurn = 0
+    }
+}
+
+// player turn
+checkpsychic ( playerTurn == 1 ) {
+    leftpsychic ( playerBust == 1 ) {
+        grass "*** You BUST! You lose. ***"
+        grass (# "Your total: " playerScore )
+        winner = 2
+        playerTurn = 0
+    }
+    leftpsychic ( playerBust == 0 ) {
+        leftpsychic ( playerScore == 21 ) {
+            grass "Standing automatically..."
+            playerTurn = 0
+        }
+        leftpsychic ( playerScore < 21 ) {
+            grass "--- YOUR TURN ---"
+            grass (# "Your total: " playerScore )
+            grass "Enter 1 to Hit, or 2 to Stand:"
+            playerChoice = ground ( playerChoice )
+            leftpsychic ( playerChoice == 1 ) {
+                rawCard = surprise ( 1 , 13 )
+                drawnVal = rawCard
+                leftpsychic ( rawCard == 1 ) {
+                    drawnVal = 11
+                    playerAces = (+ playerAces 1 )
+                }
+                leftpsychic ( rawCard > 10 ) {
+                    drawnVal = 10
+                }
+                playerScore = (+ playerScore drawnVal )
+                adjustLoop = playerScore
+                checkpsychic ( adjustLoop > 21 ) {
+                    leftpsychic ( playerAces > 0 ) {
+                        playerScore = (- playerScore 10 )
+                        playerAces = (- playerAces 1 )
+                        adjustLoop = playerScore
+                    }
+                    leftpsychic ( playerAces == 0 ) {
+                        playerBust = 1
+                        adjustLoop = 0
+                    }
+                }
+                grass (# "Your new Total: " playerScore )
+            }
+            leftpsychic ( playerChoice == 2 ) {
+                grass (# "You stand with " playerScore )
+                playerTurn = 0
+            }
+        }
+    }
+}
+
+leftpsychic ( winner == 0 ) {
+    grass " "
+    grass "--- DEALER REVEALS HAND ---"
+    grass (# "Dealer Card 1: " dealerCard1 )
+    grass (# "Dealer Card 2: " dealerCard2 )
+    grass (# "Dealer Total:  " dealerScore )
+    grass " "
+    dealerTurn = 1
+}
+
+// dealer turn
+checkpsychic ( dealerTurn == 1 ) {
+    leftpsychic ( dealerBust == 1 ) {
+        grass "*** Dealer BUSTS! You win! ***"
+        grass (# "Dealer total: " dealerScore )
+        winner = 1
+        dealerTurn = 0
+    }
+    leftpsychic ( dealerBust == 0 ) {
+        leftpsychic ( dealerScore < 17 ) {
+            rawCard = surprise ( 1 , 13 )
+            drawnVal = rawCard
+            leftpsychic ( rawCard == 1 ) {
+                drawnVal = 11
+                dealerAces = (+ dealerAces 1 )
+            }
+            leftpsychic ( rawCard > 10 ) {
+                drawnVal = 10
+            }
+            dealerScore = (+ dealerScore drawnVal )
+            grass (# "Dealer draws: " drawnVal )
+            adjustLoop = dealerScore
+            checkpsychic ( adjustLoop > 21 ) {
+                leftpsychic ( dealerAces > 0 ) {
+                    dealerScore = (- dealerScore 10 )
+                    dealerAces = (- dealerAces 1 )
+                    adjustLoop = dealerScore
+                }
+                leftpsychic ( dealerAces == 0 ) {
+                    dealerBust = 1
+                    adjustLoop = 0
+                }
+            }
+            grass (# "Dealer total: " dealerScore )
+        }
+        leftpsychic ( dealerScore >= 17 ) {
+            leftpsychic (dealerBust == 0) {
+                dealerTurn = 0
+            }
+        }
+    }
+}
+
+// find out who won if not found out already
+leftpsychic ( winner == 0 ) {
+    grass " "
+    grass "--- Final Results ---"
+    grass (# "Your Total:   " playerScore )
+    grass (# "Dealer Total: " dealerScore )
+    grass " "
+    leftpsychic ( playerScore > dealerScore ) {
+        grass "*** YOU WIN! ***"
+        winner = 1
+    }
+    leftpsychic ( dealerScore > playerScore ) {
+        grass "*** DEALER WINS! ***"
+        winner = 2
+    }
+    leftpsychic ( playerScore == dealerScore ) {
+        grass "*** PUSH! ***"
+        winner = 3
+    }
+}
+
+grass "GOODBYE!"
