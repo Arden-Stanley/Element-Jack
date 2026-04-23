@@ -1,3 +1,4 @@
 #!/bin/bash
-{ echo "run src/Blackjack.elem"; cat; } | java -jar ElementLang.jar
+./rmcmt.sh src/Blackjack.elem Blackjack.elem
+{ echo "run Blackjack.elem"; cat; } | java -jar ElementLang.jar
 # ignore errors when closing jar file. It likes to be tempermental i guess...
