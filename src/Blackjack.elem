@@ -3,6 +3,7 @@ playerScore = 0
 playerAces = 0
 playerBust = 0
 playerTurn = 1
+playerName = ""
 
 // dealer variable
 dealerScore = 0
@@ -34,26 +35,27 @@ grass " "
 
 
 checkpsychic(playerChoice != 0) {
-    checkpsychic(playerCash != 0) {
 
-        //reset game state
-        playerScore = 0
-        playerAces = 0
-        playerBust = 0
-        playerTurn = 1
+    //reset game state
+    playerScore = 0
+    playerAces = 0
+    playerBust = 0
+    playerTurn = 1
 
-        dealerScore = 0
-        dealerAces = 0
-        dealerBust = 0
-        dealerTurn = 0
+    dealerScore = 0
+    dealerAces = 0
+    dealerBust = 0
+    dealerTurn = 0
 
-        winner = 0
-        playerCard1 = 0
-        playerCard2 = 0
-        dealerCard1 = 0
-        dealerCard2 = 0
-        playerChoice = 9
-        wager = 0
+    winner = 0
+    playerCard1 = 0
+    playerCard2 = 0
+    dealerCard1 = 0
+    dealerCard2 = 0
+    playerChoice = 9
+    wager = 0
+    
+    leftpsychic(playerCash != 0) {
 
         // prompt wager
         grass (# "Your CASH: " playerCash)
@@ -108,7 +110,7 @@ checkpsychic(playerChoice != 0) {
                 playerAces = (- playerAces 1 )
                 adjustLoop = playerScore
             }
-            leftpsychic ( playerAces == 0 ) {
+            leftpsychic ( playerScore > 21 ) {
                 playerBust = 1
                 adjustLoop = 0
             }
@@ -134,7 +136,7 @@ checkpsychic(playerChoice != 0) {
                 dealerAces = (- dealerAces 1 )
                 adjustLoop = dealerScore
             }
-            leftpsychic ( dealerAces == 0 ) {
+            leftpsychic ( dealerScore > 21 ) {
                 dealerBust = 1
                 adjustLoop = 0
             }
@@ -213,7 +215,7 @@ checkpsychic(playerChoice != 0) {
                                 playerAces = (- playerAces 1 )
                                 adjustLoop = playerScore
                             }
-                            leftpsychic ( playerAces == 0 ) {
+                            leftpsychic ( playerScore > 21 ) {
                                 playerBust = 1
                                 adjustLoop = 0
                             }
@@ -266,7 +268,7 @@ checkpsychic(playerChoice != 0) {
                             dealerAces = (- dealerAces 1 )
                             adjustLoop = dealerScore
                         }
-                        leftpsychic ( dealerAces == 0 ) {
+                        leftpsychic ( dealerScore > 21 ) {
                             dealerBust = 1
                             adjustLoop = 0
                         }
@@ -300,24 +302,41 @@ checkpsychic(playerChoice != 0) {
                 grass "*** PUSH! ***"
                 winner = 3
             }
-
-            // adjust player CASH
-            leftpsychic ( winner == 1 ) {
-                playerCash = ( + playerCash wager )
-            }
-            leftpsychic ( winner == 2 ) {
-                playerCash = ( - playerCash wager )
-            }
-            // else do nothing
-
-            grass "Do you want to play another round? (1 for yes, 0 for no)"
-            playerChoice = ground ( playerChoice )
         }
-    }
+
+        // adjust player CASH
+        leftpsychic ( winner == 1 ) {
+            playerCash = ( + playerCash wager )
+        }
+        leftpsychic ( winner == 2 ) {
+            playerCash = ( - playerCash wager )
+        }
+        // else do nothing
+
+        grass "Do you want to play another round? (1 for yes, 0 for no)"
+        playerChoice = ground ( playerChoice )
+}
 }
 
+// leaderboard
 leftpsychic ( playerCash > 0 ){
-    grass "leaderboard"
+    grass " "
+    grass (# "Your CASH: " playerCash)
+    grass "Do you want to save your result to the leaderboard? (1 for yes, 0 for no)"
+    playerChoice = ground ( playerChoice )
+
+    leftpsychic ( playerChoice == 1){
+        grass " "
+        grass "Please enter your name: "
+        playerName = ground ( playerName )
+
+        leaderboardEntry = (# playerName (# " - $" playerCash))
+        weld saveFile "leaderboard.txt"
+        replica saveFile [leaderboardEntry]
+        cool saveFile 0
+
+        grass "Leaderboard updated!"
+    }
 }
 
 grass "GOODBYE!"
